@@ -1,4 +1,4 @@
 # DNAffinity
 
-Machine Learning method to predict binding sites for different Transcription Factors
+Machine Learning method to predict binding sites for different Transcription Factors using data from different experimental techniques.
 
