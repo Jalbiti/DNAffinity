@@ -48,6 +48,8 @@ dictionary = dict(zip(values, strings))
 plt.plot(sorted(values))
 strings[0][12:18]
 
+
+
 # # hooman
 
 # # Read and process raw data from input files 
@@ -77,6 +79,9 @@ strings[0][12:18]
 # values = list((values-min_val)/normalization)
 
 # dictionary = dict(zip(values, strings))
+
+# plt.plot(sorted(values))
+
 
 
 freq_matrix = pd.read_csv(f'drive/MyDrive/ML/gcPBM/cbf1/cbf1_freq_matrix_6.txt', delim_whitespace=True)
@@ -118,6 +123,8 @@ for s in np.arange(len(strings)):
 
 discarded = list(discarded)
 print('We have discarded',len(discarded)/len(strings)*100,'% of the data')
+
+
 
 # ## get freq mat
 
@@ -942,6 +949,10 @@ chr4 = chr4.sort_values("start") # [12:29], [30:42]
 chr4 = chr4.reset_index(drop=True)
 chr4
 
+
+
+
+
 # start_time = time.time()
 
 # genomic_tmer_list = [sequence[k:k+30] for k in np.arange(start_bp-000000,end_bp-000000)]
@@ -1005,6 +1016,10 @@ with open(f'drive/MyDrive/ML/gcPBM/{protein}/affinities_{protein}.bedgraph','w')
     file.write("%s\t" % prof[2])
     file.write("%s\t" % prof[3])
     file.write("%s\n" % prof[1])
+
+plt.plot(affinities)
+
+
 
 experiment='chip'
 
