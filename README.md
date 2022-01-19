@@ -1,4 +1,5 @@
 # DNAffinity
-###Machine Learning method to predict binding sites for different Transcription Factors using data from different experimental techniques.
 
-DNAffinity presents a physics-based machine learning approach to predict in vitro transcription factor binding affinities from structural and mechanical DNA properties directly derived from atomistic molecular dynamics simulations. The method is able to predict affinities obtained with techniques as different as uPBM, gcPBM and HT-SELEX. When complemented with chromatin structure information, our in vitro trained method provides also good estimates of in vivo binding sites in yeast. 
+#### Machine Learning method to predict binding sites for different Transcription Factors using data from different experimental techniques.
+
+DNAffinity presents a physics-based machine learning approach to predict *in vitro* transcription factor binding affinities from structural and mechanical DNA properties directly derived from atomistic molecular dynamics simulations. The method is able to predict affinities obtained with techniques as different as uPBM, gcPBM and HT-SELEX. When complemented with chromatin structure information, our in vitro trained method provides also good estimates of *in vivo* binding sites in yeast. 
