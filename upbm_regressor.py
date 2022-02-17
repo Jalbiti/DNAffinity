@@ -66,7 +66,7 @@ sort_aff = sorted(values)
 # pick top points ~ proportion 1:500 before undersampling i.e. we pick 50 top points not to undersample
 upper_bound = sort_aff[-1000]
 
-# interval dictionary -- maybe it is not the best option? idk it works for now...
+# interval dictionary --
 interval_dict = defaultdict(list)
 for value in values:
     interval_dict[int(value*L)].append(value)
