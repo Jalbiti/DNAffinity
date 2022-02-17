@@ -6,5 +6,7 @@ DNAffinity presents a physics-based machine learning approach to predict *in vit
 
 
 The pipeline for a specific protein consists on:
-	1. Getting the data file (i.e under the **test_data** folder the `Gata4_alignment_weighted.txt` file) 
-	2. Running the corresponging regressor (i.e. `python upbm_regressor.py`)
+Markup : 1. Getting the data file (i.e under the **test_data** folder the `Gata4_alignment_weighted.txt` file) 
+	 2. Running the corresponging regressor (i.e. `python upbm_regressor.py`)
+
+
