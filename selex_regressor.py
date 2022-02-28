@@ -114,7 +114,7 @@ selected_tetramers = list(np.arange(0, len_aln-3))
 # time
 start_time = time.time()
 dset_train = Dataset(protein, df_train, model_target, randomize_fce, chosen_features, score, selected_tetramers)
-model = Model(dset_train, regressor, training_set_size)
+model = Model(dset_train, len_aln, regressor, training_set_size)
 print('the SELEX model has been trained')
 print("It took %s seconds" % (time.time() - start_time))
 
