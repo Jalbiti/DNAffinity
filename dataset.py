@@ -7,19 +7,25 @@ from sklearn.preprocessing import MinMaxScaler
 class Dataset:
     def __init__(self, protein, fitxer, model_target='tetramers', randomize_fce=False,
                  chosen_features=('full_fce', 'avg'), score='Median_intensity',
-                 selected_tetramers=(0, 1, 2, 3, 4, 5, 6, 7, 8), pbm=10):
+                 selected_tetramers=(0, 1, 2, 3, 4, 5, 6, 7, 8), weighted=False):
 
         self.protein = protein
         self.pbm35 = fitxer
 
-        self.pbm35 = self.pbm35[["ID_REF","VALUE", 'WEIGHT']]
-        self.pbm35.columns = ["ID_REF", "VALUE", 'WEIGHT']
+        if weighted:
+            self.pbm35 = self.pbm35[["ID_REF", "VALUE", 'WEIGHT']]
+            self.pbm35.columns = ["ID_REF", "VALUE", 'WEIGHT']
+        else:
+            self.pbm35 = self.pbm35[["ID_REF", "VALUE"]]
+            self.pbm35.columns = ["ID_REF", "VALUE"]
         self.pbm35 = self.pbm35.dropna()
 
         inv_seq_data = self.pbm35.copy()
         inv_seq_data["ID_REF"] = inv_seq_data["ID_REF"].apply(self.inv_seq)
         self.pbm35 = pd.concat([self.pbm35, inv_seq_data])
         self.pbm35.reset_index(inplace=True)
+        self.electrostatic, self.tetra_avg, self.tetra_fce, self.tetra_fce_reduced, self.onehot_1mer, self.integer, \
+            self.presence_tetra, self.mgw = 8 * [None]
 
         self.feats = chosen_features
         self.score = score
@@ -43,6 +49,9 @@ class Dataset:
         and setting them as the respective attributes
         :return: None
         """
+        tetra_fce = {line.split()[0]: np.array([float(x) for x in line.split()[1:]])
+                     for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/fce_tetramer.dat')
+                     if 'SHIFT' not in line}
         if 'avg' in self.feats:
             tetra_avg = {line.split()[0]: np.array([float(x) for x in line.split()[1:]])
                          for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/avg_tetramer.dat')
@@ -50,9 +59,6 @@ class Dataset:
             self.tetra_avg = np.array([np.concatenate([tetra_avg[otmer[i:i+4]] for i in self.selected_tetramers])
                                        for otmer in self.sequences])
         if 'full_fce' in self.feats or 'diagonal_fce' in self.feats:
-            tetra_fce = {line.split()[0] : np.array([float(x) for x in line.split()[1:]])
-                         for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/fce_tetramer.dat')
-                         if 'SHIFT' not in line}
             if self.randomize:
                 keys = list(tetra_fce.keys())
                 permut_keys = np.random.permutation(keys)
@@ -63,7 +69,7 @@ class Dataset:
         # i.e., remove all physical information from the dataset
         # Let's also keep track of the reduced matrix
         if 'diagonal_fce' in self.feats:
-            tetra_fce_reduced = {tt: tetra_fce[tt][list(range(0,36,7))] for tt in tetra_fce.keys()}
+            tetra_fce_reduced = {tt: tetra_fce[tt][list(range(0, 36, 7))] for tt in tetra_fce.keys()}
             self.tetra_fce_reduced = np.array([np.concatenate([tetra_fce_reduced[otmer[i:i+4]]
                                                                for i in self.selected_tetramers])
                                                for otmer in self.sequences])
@@ -80,14 +86,14 @@ class Dataset:
             self.presence_tetra = np.array([self.presence(otmer, 4) for otmer in self.sequences]).astype(np.int8)
         #####
         if 'mgw' in self.feats:
-            self.mgw = {line.split()[0] : [float(x) for x in line.split()[1:]]
+            self.mgw = {line.split()[0]: [float(x) for x in line.split()[1:]]
                         for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/mgw_rohs.txt')
                         if 'SHIFT' not in line}
             self.mgw = np.array([np.concatenate([self.mgw[otmer[i:i+4]] for i in self.selected_tetramers])
                                  for otmer in self.sequences])
 
         if 'electrostatic' in self.feats:
-            self.electrostatic = {line.split()[0] : [x for x in line.split()[1:]]
+            self.electrostatic = {line.split()[0]: [x for x in line.split()[1:]]
                                   for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/electrostatic.txt')
                                   if 'SHIFT' not in line}
             self.electrostatic = np.array([np.concatenate([self.electrostatic[otmer[i:i+4]]
@@ -139,7 +145,7 @@ class Dataset:
         keyw = "VALUE" if self.score == 'Median_intensity' else "Z-score"
         if self.model_target == "octamers":
             vals = self.pbm35[keyw].values
-            return MinMaxScaler().fit_transform(vals.reshape(-1,1))
+            return MinMaxScaler().fit_transform(vals.reshape(-1, 1))
         elif self.model_target == "tetramers":
             mean_scores = self.mean_score()
             vals = np.array([[mean_scores[i][otmer[i:i+4]] for i in self.selected_tetramers]

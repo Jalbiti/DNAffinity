@@ -54,9 +54,9 @@ weight_dict = dict(zip(values, weights))
 
 len_aln = len(strings[0])
 
-dictionary[1] # quick check that everything is alright
+dictionary[1]  # quick check that everything is alright
 
-#### undersampling
+# undersampling
 
 # number of divisions we are using
 L = 25000
@@ -75,12 +75,12 @@ for value in values:
 # and up to two for i>L/2
 
 training_ordered = []
-start = 1 # i.e. starts picking values larger than start/L from the normalized affinites
+start = 1  # i.e. starts picking values larger than start/L from the normalized affinites
 
-for i in np.arange(start,L+1):
-    if len(interval_dict[i])>0:
+for i in np.arange(start, L+1):
+    if len(interval_dict[i]) > 0:
         if i <= L*upper_bound:
-            random_values = [random.choice(interval_dict[i]) for j in np.arange(0,20)]
+            random_values = [random.choice(interval_dict[i]) for j in np.arange(0, 20)]
             random_values = set(random_values)
             value = random.choice(interval_dict[i])
             training_ordered.append([dictionary[value], value, weight_dict[value]])
@@ -90,10 +90,10 @@ for i in np.arange(start,L+1):
 
 # writes the file w/o randomization (not used but in case we need it)
 
-with open(f'proteins/{protein}/{protein}_training_ordered.txt','w') as file:
+with open(f'proteins/{protein}/{protein}_training_ordered.txt', 'w') as file:
     file.write('ID_REF\tVALUE\tWEIGHT\n')
 
-with open(f'proteins/{protein}/{protein}_training_ordered.txt','a') as file:
+with open(f'proteins/{protein}/{protein}_training_ordered.txt', 'a') as file:
     for vector in training_ordered:
         file.write("%s\t" % vector[0])
         file.write("%s\t" % vector[1])
@@ -105,10 +105,10 @@ with open(f'proteins/{protein}/{protein}_training_ordered.txt','a') as file:
 
 np.random.shuffle(training_ordered)
 
-with open(f'proteins/{protein}/{protein}_training.txt','w') as file:
+with open(f'proteins/{protein}/{protein}_training.txt', 'w') as file:
     file.write('ID_REF\tVALUE\tWEIGHT\n')
     
-with open(f'proteins/{protein}/{protein}_training.txt','a') as file:
+with open(f'proteins/{protein}/{protein}_training.txt', 'a') as file:
     for vector in training_ordered:
         file.write("%s\t" % vector[0])
         file.write("%s\t" % vector[1])
@@ -317,7 +317,7 @@ class Model:
             # print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
             # print(feat,indices[f],importances[indices[f]])
             l.append(importances[indices[f]])
-            features.append([feat,importances[indices[f]]])
+            features.append([feat, importances[indices[f]]])
     
     def predict(self, testing_dataset=None):
         if testing_dataset is not None:
@@ -325,7 +325,7 @@ class Model:
         self.y_pred = self.regressor.predict(self.X_test).reshape(-1,1)
         self.y_test = self.y_test.reshape(-1,1)
         self.r2 = np.round(metrics.r2_score(self.y_test, self.y_pred, self.w_test), 3) # with weights
-        #self.r2 = np.round(metrics.r2_score(self.y_test, self.y_pred), 3)           # w/o weights
+        # self.r2 = np.round(metrics.r2_score(self.y_test, self.y_pred), 3)           # w/o weights
         self.mse = np.round(metrics.mean_absolute_error(self.y_test, self.y_pred), 6)
 
     def plot(self):
@@ -333,7 +333,7 @@ class Model:
         plt.rc('ytick', labelsize=15)
         plt.xlabel('Testing')
         plt.ylabel('Predicted')
-        #plt.title(f'MSE = {self.mse}, r$^2$ = {self.r2}')
+        # plt.title(f'MSE = {self.mse}, r$^2$ = {self.r2}')
         plt.xlim = (0,1)
         plt.ylim = (0,1)
         plt.scatter(self.y_test, self.y_pred, label=f'r$^2$ = {self.r2}')
@@ -355,9 +355,9 @@ regressor = 'random_forest'
 training_set_size = 0.9
 randomize_fce = False
 score = 'Median_intensity'
-selected_tetramers = list(np.arange(0,len_aln-3))
+selected_tetramers = list(np.arange(0, len_aln-3))
 
-## time
+# time
 
 import time
 start_time = time.time()
@@ -373,9 +373,9 @@ print('The correlation is ', model.r2)
 
 plt.savefig(f'output_upbm/{protein}/{protein}_corr.png')
 
-with open(f'output_upbm/uupbm_correlations.txt','a') as file:
-   file.write("%s\t" % protein)
-   file.write("%s\n" % model.r2)
+with open(f'output_upbm/uupbm_correlations.txt', 'a') as file:
+    file.write("%s\t" % protein)
+    file.write("%s\n" % model.r2)
 
 # features
 
@@ -399,10 +399,10 @@ plt.legend(patches, labels, loc="best")
 plt.savefig(f'output_upbm/{protein}/features.png')
 
 with open(f'output_upbm/upbm_features.txt','a') as file:
-   file.write("%s\t" % protein)
-   file.write("%s\t" % p)
-   file.write("%s\t" % e)
-   file.write("%s\n" % shape)
+    file.write("%s\t" % protein)
+    file.write("%s\t" % p)
+    file.write("%s\t" % e)
+    file.write("%s\n" % shape)
 
 print(df[0:30])
 
