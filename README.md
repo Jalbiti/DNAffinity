@@ -14,9 +14,9 @@ This is a brief summary of the main functions:
 
 * Data import: `readData`, `processReads`
 * Data Processing: `underSampling`, `overSampling`
-* Model Training: `peakDetection`, `peakScoring`
-* Model Testing: `plotPeaks`
-* Predicting: `syntheticNucMap`
+* Model Training: `f1`, `f2`
+* Model Testing: `f3`
+* Predicting: `f4`
 
 ## Usage
 ---------------
