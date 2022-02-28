@@ -23,20 +23,32 @@ class Model:
             self.weights = None
         self.features = []
         self.l = []
+        self.len_aln = len_aln
+        self.training_set_size = training_set_size
         self.y_pred, self.r2, self.mse = 3 * [None]
+        self.X_train, self.X_test, self.y_train, self.y_test, self.w_train, self.w_test = 6 * [None]
 
         print("features have shape: ", self.X.shape)
         print("target values have shape: ", self.y.shape)
         self.regressor = Model.regressors[regressor]
+        self.train()
+
+    def train(self):
+        """
+        Splits the data from the Dataset and trains the regressor, also extracting data
+        on feature importances
+        :return: None
+        """
         # splits w/o randomness for training and testing
-        if weighted:
+        if self.weights is not None:
             self.X_train, self.X_test, self.y_train, self.y_test, \
-                self.w_train, self.w_test = train_test_split(self.X, self.y, self.weights, train_size=training_set_size,
+                self.w_train, self.w_test = train_test_split(self.X, self.y, self.weights,
+                                                             train_size=self.training_set_size,
                                                              random_state=0, shuffle=False)
             self.regressor.fit(self.X_train, self.y_train, self.w_train)
         else:
             self.X_train, self.X_test, self.y_train, \
-                self.y_test = train_test_split(self.X, self.y, self.weights, train_size=training_set_size,
+                self.y_test = train_test_split(self.X, self.y, self.weights, train_size=self.training_set_size,
                                                random_state=0, shuffle=False)
             self.regressor.fit(self.X_train, self.y_train)
 
@@ -47,44 +59,27 @@ class Model:
         # Print the feature ranking
         print("Feature ranking:")
         for f in range(self.X.shape[1]):
+            match = ['Shift', 'Slide', 'Rise', 'Tilt', 'Roll', 'Twist']
             if indices[f] < 256:
                 feat = 'Presence'
-            if indices[f] in np.arange(256, 256 + (len_aln - 3) * 6, 1):
-                if indices[f] % 6 == 0:
-                    feat = 'AVG Shift'
-                if indices[f] % 6 == 1:
-                    feat = 'AVG Slide'
-                if indices[f] % 6 == 2:
-                    feat = 'AVG Rise'
-                if indices[f] % 6 == 3:
-                    feat = 'AVG Tilt'
-                if indices[f] % 6 == 4:
-                    feat = 'AVG Roll'
-                if indices[f] % 6 == 5:
-                    feat = 'AVG Twist'
-            if indices[f] in np.arange(256 + (len_aln - 3) * 6, 256 + (len_aln - 3) * 12, 1):
-                if indices[f] % 6 == 0:
-                    feat = 'Diagonal Shift'
-                if indices[f] % 6 == 1:
-                    feat = 'Diagonal Slide'
-                if indices[f] % 6 == 2:
-                    feat = 'Diagonal Rise'
-                if indices[f] % 6 == 3:
-                    feat = 'Diagonal Tilt'
-                if indices[f] % 6 == 4:
-                    feat = 'Diagonal Roll'
-                if indices[f] % 6 == 5:
-                    feat = 'Diagonal Twist'
-            if indices[f] >= 256 + (len_aln - 3) * 12:
+            elif indices[f] in np.arange(256, 256 + (self.len_aln - 3) * 6, 1):
+                feat = f'AVG {match[indices[f] % 6]}'
+            elif indices[f] in np.arange(256 + (self.len_aln - 3) * 6, 256 + (self.len_aln - 3) * 12, 1):
+                feat = f'Diagonal {match[indices[f] % 6]}'
+            elif indices[f] >= 256 + (self.len_aln - 3) * 12:
                 feat = 'Electro'
-            #       for f in range(self.X.shape[1]):
-            # print(feat)
-            # print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
-            # print(feat,indices[f],importances[indices[f]])
+            else:
+                raise ValueError
             self.l.append(importances[indices[f]])
             self.features.append([feat, importances[indices[f]]])
 
     def predict(self, testing_dataset=None):
+        """
+        Performs the prediction on the test data from the internal (default) or external dataset;
+        sets the predictions and corresponding errors/correlations as attributes
+        :param testing_dataset: Dataset instance, test data to supply for cross-evaluation (optional)
+        :return: None
+        """
         if testing_dataset is not None:
             self.X_test, self.y_test = testing_dataset.features, testing_dataset.scores
         self.y_pred = self.regressor.predict(self.X_test).reshape(-1, 1)
@@ -96,6 +91,10 @@ class Model:
         self.mse = np.round(metrics.mean_absolute_error(self.y_test, self.y_pred), 6)
 
     def plot(self):
+        """
+        Plots the prediction vs ground truth
+        :return: None
+        """
         plt.rc('xtick', labelsize=15)
         plt.rc('ytick', labelsize=15)
         plt.xlabel('Testing')
@@ -107,5 +106,9 @@ class Model:
 
     @staticmethod
     def show():
+        """
+        To allow for multiple overlaid scatter plots, show() can be called separately
+        :return: None
+        """
         plt.legend()
         plt.show()
