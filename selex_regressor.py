@@ -28,11 +28,17 @@ from itertools import product
 from dataset import Dataset
 from model import Model
 
-
 protein = sys.argv[1]
 cycle = sys.argv[2]
 
-deca = pd.read_csv(f'reduced_selex_results_rohs/{protein}/{cycle}.txt', sep='\t')
+data_dir = f'reduced_selex_results_rohs/{protein}'
+
+#####################################
+# files required to run:
+# '{data_dir}/{cycle}.txt'
+#####################################
+
+deca = pd.read_csv(f'{data_dir}/{cycle}.txt', sep='\t')
 
 strings = list(deca["Kmer"])
 values = list(deca["Affinity"])
@@ -62,8 +68,6 @@ if not os.path.isdir(f'output_selex/{protein}'):
 
 with open(f'output_selex/{protein}/{protein}_training_ordered.txt', 'w') as file:
     file.write('ID_REF\tVALUE\n')
-
-with open(f'output_selex/{protein}/{protein}_training_ordered.txt', 'a') as file:
     for vector in mat:
         file.write("%s\t" % vector[0])
         file.write("%s\n" % vector[1])
@@ -74,8 +78,6 @@ np.random.shuffle(mat)
 
 with open(f'output_selex/{protein}/SELEX_training.txt', 'w') as file:
     file.write('ID_REF\tVALUE\n')
-
-with open(f'output_selex/{protein}/SELEX_training.txt', 'a') as file:
     for vector in mat:
         file.write("%s\t" % vector[0])
         file.write("%s\n" % vector[1])
@@ -149,14 +151,14 @@ fig.set_size_inches(8, 8)
 labels = ["Presence", "Electrostatic", "Shape"]
 patches, texts = plt.pie(y, startangle=0)
 plt.legend(patches, labels, loc="best")
-plt.savefig(f'output_selex/{protein}/features.png')
+plt.savefig(f'output_selex/{protein}_features.png')
 
 with open(f'output_selex/htselex_rohs_correlations.txt', 'a') as file:
     file.write("%s\t" % protein)
     file.write("%s\n" % model.r2)
 
 
-with open(f'output/htselex_features.txt', 'a') as file:
+with open(f'output_selex/htselex_features.txt', 'a') as file:
     file.write("%s\t" % protein)
     file.write("%s\t" % p)
     file.write("%s\t" % e)

@@ -37,6 +37,11 @@ else:
     protein = 'Gata4'
     data_dir = f'test_data'
 
+#####################################
+# files required to run:
+# '{data_dir}/{protein}_matrix_aligned.txt'
+#####################################
+
 # first read the processed data -- the 12mers and their corresponding affinity
 # the _over file has some extra 12mers per sequence, namely those with affinity
 # larger than max_aff/2
@@ -91,13 +96,10 @@ for i in np.arange(start, L+1):
 # writes the file w/o randomization (not used but in case we need it)
 with open(f'{data_dir}/{protein}_training_ordered.txt', 'w') as file:
     file.write('ID_REF\tVALUE\tWEIGHT\n')
-
-with open(f'{data_dir}/{protein}_training_ordered.txt', 'a') as file:
     for vector in training_ordered:
         file.write("%s\t" % vector[0])
         file.write("%s\t" % vector[1])
         file.write("%s\n" % vector[2])
-
 
 # writes the randomized file ready for training
 np.random.shuffle(training_ordered)

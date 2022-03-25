@@ -17,11 +17,17 @@ from model import Model
 
 protein = 'cbf1'
 concentration = '100' # '100' or '200'
-experiment = 'pb' # 'chip' or 'pb' for in vivo or in vitro resp.
+data_dir = f'drive/MyDrive/ML/gcPBM/{protein}'
+
+#####################################
+# files required to run:
+# '{data_dir}/{protein}_{concentration}.txt'
+# '{data_dir}/cbf1_freq_matrix_6.txt'
+#####################################
 
 # yeast
 
-raw_data = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{concentration}.txt', sep='\t')
+raw_data = pd.read_csv(f'{data_dir}/{protein}_{concentration}.txt', sep='\t')
 proc_data = pd.concat([raw_data[["Sequence", "Alexa488"]]])
 proc_data = proc_data.dropna()
 proc_data = proc_data.reset_index()
@@ -40,7 +46,7 @@ print(strings[0][12:18])
 
 
 
-freq_matrix = pd.read_csv(f'drive/MyDrive/ML/gcPBM/cbf1/cbf1_freq_matrix_6.txt', delim_whitespace=True)
+freq_matrix = pd.read_csv(f'{data_dir}/cbf1_freq_matrix_6.txt', delim_whitespace=True)
 freq_matrix = np.array(freq_matrix)
 translate = {'A':0, 'C':1, 'G':2, 'T':3}
 reverse = {0:'A', 1:'C', 2:'G', 3:'T'}
@@ -79,7 +85,7 @@ df_train = df_train.reset_index(drop=True)
 # df_train = df_train.sample(frac=1).reset_index(drop=True)[0:15000]
 len(df_train)
 # # smart under, no weighting
-# df_train = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_training.txt', sep='\t')
+# df_train = pd.read_csv(f'{data_dir}/{protein}_training.txt', sep='\t')
 
 # # no smart under, weighting
 # df_train = pd.DataFrame({'ID_REF': strings, 'VALUE': values, 'WEIGHT':weights})
