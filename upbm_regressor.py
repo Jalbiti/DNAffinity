@@ -17,8 +17,7 @@
 # 'Esrrg', 'Klf8', 'Klf9', 'Klf12', 'Mybl2', 'Mzf1', 'Nhlh2', 'Nkx2-9', 'Nr2e1', 'Nr2f1', 'Nr2f6', 'Nr4a2', 'P42pop',
 # 'Pit1', 'Prdm11', 'Rarg', 'Rfx7', 'Rorb', 'Sox3', 'Srebf1', 'Tbx1', 'Tbx4', 'Tbx5', 'Tbx20', 'Zbtb1', 'Zfp300',
 # 'Zfp3', 'Zfp637', 'Zfx', 'Zic5', 'Zkscan1', 'Zkscan5', 'Znf740', 'Foxg1'
-
-
+import os.path
 import sys
 import numpy as np
 import pandas as pd
@@ -31,15 +30,18 @@ import random
 from dataset import Dataset
 from model import Model
 
-
-protein = sys.argv[1]
-
+if len(sys.argv) > 1:
+    protein = sys.argv[1]
+    data_dir = f'proteins/{protein}'
+else:
+    protein = 'Gata4'
+    data_dir = f'test_data'
 
 # first read the processed data -- the 12mers and their corresponding affinity
 # the _over file has some extra 12mers per sequence, namely those with affinity
 # larger than max_aff/2
 
-deca = pd.read_csv(f'proteins/{protein}/{protein}_matrix_aligned.txt', sep='\t')
+deca = pd.read_csv(f'{data_dir}/{protein}_matrix_aligned.txt', sep='\t')
 
 strings = list(deca["ID_REF"])
 values = list(deca["VALUE"])
@@ -87,10 +89,10 @@ for i in np.arange(start, L+1):
                 training_ordered.append([dictionary[value], value, weight_dict[value]])
 
 # writes the file w/o randomization (not used but in case we need it)
-with open(f'proteins/{protein}/{protein}_training_ordered.txt', 'w') as file:
+with open(f'{data_dir}/{protein}_training_ordered.txt', 'w') as file:
     file.write('ID_REF\tVALUE\tWEIGHT\n')
 
-with open(f'proteins/{protein}/{protein}_training_ordered.txt', 'a') as file:
+with open(f'{data_dir}/{protein}_training_ordered.txt', 'a') as file:
     for vector in training_ordered:
         file.write("%s\t" % vector[0])
         file.write("%s\t" % vector[1])
@@ -99,10 +101,9 @@ with open(f'proteins/{protein}/{protein}_training_ordered.txt', 'a') as file:
 
 # writes the randomized file ready for training
 np.random.shuffle(training_ordered)
-with open(f'proteins/{protein}/{protein}_training.txt', 'w') as file:
+
+with open(f'{data_dir}/{protein}_training.txt', 'w') as file:
     file.write('ID_REF\tVALUE\tWEIGHT\n')
-    
-with open(f'proteins/{protein}/{protein}_training.txt', 'a') as file:
     for vector in training_ordered:
         file.write("%s\t" % vector[0])
         file.write("%s\t" % vector[1])
@@ -115,7 +116,7 @@ the_features = {0: ['diagonal_fce'], 1: ['presence_tetramer'], 2: ['avg'],
                 5: ['avg', 'diagonal_fce']}
 len_aln = len(strings[0])
 
-df_train = pd.read_csv(f'proteins/{protein}/{protein}_training.txt', sep='\t')
+df_train = pd.read_csv(f'{data_dir}/{protein}_training.txt', sep='\t')
 
 chosen_features = the_features[4]
 model_target = 'octamers'
@@ -136,6 +137,11 @@ print("It took %s seconds" % (time.time() - start_time))
 model.predict()
 print(model.y_test.shape, model.y_pred.shape)
 print('The correlation is ', model.r2)
+
+if not os.path.isdir('output_upbm'):
+    os.mkdir('output_upbm')
+if not os.path.isdir(f'output_upbm/{protein}'):
+    os.mkdir(f'output_upbm/{protein}')
 
 plt.savefig(f'output_upbm/{protein}/{protein}_corr.png')
 

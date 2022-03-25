@@ -12,10 +12,13 @@ from sklearn.preprocessing import StandardScaler
 protein = 'cbf1'
 concentration = '100'  # '100' or '200'
 experiment = 'pb'  # 'chip' or 'pb' for in vivo or in vitro resp.
+base_dir = f'drive/MyDrive/ML'
+# NOTE: base_dir has to contain directories base_dir/gcPBM/{protein}/... and base_dir/input
+data_dir = f'{base_dir}/gcPBM/{protein}'
 
 # genomic
 
-raw_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
+raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
 proc_peaks = raw_peaks[[0, 3, 4, 5, 8]]
 proc_peaks = proc_peaks.rename(columns={0: "chr", 3: "start", 4: "end", 5: "score", 8: "distance"})
 proc_peaks["distance"] = proc_peaks["distance"].str[12:].astype(int)
@@ -29,7 +32,7 @@ min_val = min(proc_peaks["score"])
 normalization = max(proc_peaks["score"]) - min(proc_peaks["score"])
 proc_peaks["score"] = list(((proc_peaks["score"] - min_val) / normalization))
 
-with open(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
+with open(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
     for i in range(len(proc_peaks)):
         file.write("%s\t" % proc_peaks.iloc[i][0])
         file.write("%s\t" % proc_peaks.iloc[i][1])
@@ -70,14 +73,14 @@ end_bp = 100000 * number
 
 print(start_bp, end_bp, end_bp - start_bp)
 
-fasta = SeqIO.read(f"drive/MyDrive/ML/gcPBM/{chrsome}_{number}.fa", "fasta")
+fasta = SeqIO.read(f"{base_dir}/gcPBM/{chrsome}_{number}.fa", "fasta")
 sequence = str(fasta.seq)
 
 experiment = 'chip'
 
 # genomic
 
-raw_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
+raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
 proc_peaks = raw_peaks[[0, 3, 4, 5, 8]]
 proc_peaks = proc_peaks.rename(columns={0: "chr", 3: "start", 4: "end", 5: "score", 8: "distance"})
 proc_peaks["distance"] = proc_peaks["distance"].str[12:].astype(int)
@@ -91,7 +94,7 @@ min_val = min(proc_peaks["score"])
 normalization = max(proc_peaks["score"]) - min(proc_peaks["score"])
 proc_peaks["score"] = list(((proc_peaks["score"] - min_val) / normalization))
 
-with open(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
+with open(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
     for i in range(len(proc_peaks)):
         file.write("%s\t" % proc_peaks.iloc[i][0])
         file.write("%s\t" % proc_peaks.iloc[i][1])
@@ -107,7 +110,7 @@ experiment = 'pb'
 
 ## genomic
 
-raw_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
+raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
 proc_peaks = raw_peaks[[0, 3, 4, 5, 8]]
 proc_peaks = proc_peaks.rename(columns={0: "chr", 3: "start", 4: "end", 5: "score", 8: "distance"})
 proc_peaks["distance"] = proc_peaks["distance"].str[12:].astype(int)
@@ -121,7 +124,7 @@ min_val = min(proc_peaks["score"])
 normalization = max(proc_peaks["score"]) - min(proc_peaks["score"])
 proc_peaks["score"] = list(((proc_peaks["score"] - min_val) / normalization))
 
-with open(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
+with open(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
     for i in range(len(proc_peaks)):
         file.write("%s\t" % proc_peaks.iloc[i][0])
         file.write("%s\t" % proc_peaks.iloc[i][1])
@@ -133,14 +136,14 @@ chr4 = chr4.sort_values("start")[34:49]  # [12:29], [30:42]
 chr4 = chr4.reset_index(drop=True)
 print(chr4)
 
-new_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_rep1_peaks.bed', sep='\t', header=None)
+new_peaks = pd.read_csv(f'{data_dir}/{protein}_rep1_peaks.bed', sep='\t', header=None)
 new_peaks = new_peaks[[0, 1, 2, 4]]
 new_peaks = new_peaks.rename(columns={0: "chr", 1: "start", 2: "end", 4: "score"})
 min_val = min(new_peaks["score"])
 normalization = max(new_peaks["score"]) - min(new_peaks["score"])
 new_peaks["score"] = list(((new_peaks["score"] - min_val) / normalization))
 
-with open(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_rep1_peaks.bedgraph', 'w') as file:
+with open(f'{data_dir}/{protein}_rep1_peaks.bedgraph', 'w') as file:
     for i in range(len(new_peaks)):
         file.write("%s\t" % new_peaks.iloc[i][0])
         file.write("%s\t" % new_peaks.iloc[i][1])
@@ -152,14 +155,14 @@ chr4 = chr4.sort_values("start")  # [12:29], [30:42]
 chr4 = chr4.reset_index(drop=True)
 print(chr4)
 
-new_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_rep2_peaks.bed', sep='\t', header=None)
+new_peaks = pd.read_csv(f'{data_dir}/{protein}_rep2_peaks.bed', sep='\t', header=None)
 new_peaks = new_peaks[[0, 1, 2, 4]]
 new_peaks = new_peaks.rename(columns={0: "chr", 1: "start", 2: "end", 4: "score"})
 min_val = min(new_peaks["score"])
 normalization = max(new_peaks["score"]) - min(new_peaks["score"])
 new_peaks["score"] = list(((new_peaks["score"] - min_val) / normalization))
 
-with open(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_rep2_peaks.bedgraph', 'w') as file:
+with open(f'{data_dir}/{protein}_rep2_peaks.bedgraph', 'w') as file:
     for i in range(len(new_peaks)):
         file.write("%s\t" % new_peaks.iloc[i][0])
         file.write("%s\t" % new_peaks.iloc[i][1])
@@ -171,7 +174,7 @@ chr4 = chr4.sort_values("start")  # [12:29], [30:42]
 chr4 = chr4.reset_index(drop=True)
 print(chr4)
 
-data = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_dictionary_{chrsome}_{number}.txt', sep='\t',
+data = pd.read_csv(f'{data_dir}/{protein}_dictionary_{chrsome}_{number}.txt', sep='\t',
                    header=None)
 
 genomic_tmer_dict = dict(data.values.tolist())
@@ -198,7 +201,7 @@ for i in np.arange(start_bp - start_bp, end_bp - 29 - start_bp):
         aff = genomic_tmer_dict[seq]
     affinities.append(aff)
 
-with open(f'drive/MyDrive/ML/gcPBM/{protein}/affinities_{protein}.bedgraph', 'w') as file:
+with open(f'{data_dir}/affinities_{protein}.bedgraph', 'w') as file:
     for prof in profile_matrix:
         file.write(f"{chrsome}\t")
         file.write("%s\t" % prof[2])
@@ -208,7 +211,7 @@ with open(f'drive/MyDrive/ML/gcPBM/{protein}/affinities_{protein}.bedgraph', 'w'
 experiment = 'chip'
 
 # Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.bedgraph', sep='\t', header=None)
+chip_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', sep='\t', header=None)
 chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
 
 peaks_chr_this = chip_peaks[chip_peaks['chr'] == chrsome]
@@ -246,7 +249,7 @@ print(peaks)
 experiment = 'pb'
 
 # Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_{experiment}-exo.bedgraph', sep='\t', header=None)
+chip_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', sep='\t', header=None)
 chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
 
 peaks_chr_this = chip_peaks[chip_peaks['chr'] == chrsome]
@@ -282,7 +285,7 @@ for j in range(len(affinities)):
 # new peaks
 
 # Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_rep1_peaks.bedgraph', sep='\t', header=None)
+chip_peaks = pd.read_csv(f'{data_dir}/{protein}_rep1_peaks.bedgraph', sep='\t', header=None)
 chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
 
 peaks_chr_this = chip_peaks[chip_peaks['chr'] == chr_r]
@@ -318,7 +321,7 @@ for j in range(len(affinities)):
 # new peaks second replicate
 
 # Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/{protein}_rep2_peaks.bedgraph', sep='\t', header=None)
+chip_peaks = pd.read_csv(f'{data_dir}/{protein}_rep2_peaks.bedgraph', sep='\t', header=None)
 chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
 
 peaks_chr_this = chip_peaks[chip_peaks['chr'] == chr_r]
@@ -353,7 +356,7 @@ for j in range(len(affinities)):
 
 print(peaks)
 
-nuc_peaks = pd.read_csv(f'drive/MyDrive/ML/gcPBM/avg_nuc_calls.txt', sep=',')
+nuc_peaks = pd.read_csv(f'{data_dir}/avg_nuc_calls.txt', sep=',')
 nuc_peaks = nuc_peaks[['chr', 'start', 'end', 'score']]
 nuc_chr_this = nuc_peaks.loc[nuc_peaks['chr'] == chr_r]
 filtered_nuc = nuc_chr_this[(nuc_chr_this["start"] > start_bp) & (nuc_chr_this["end"] <= end_bp)]
@@ -383,10 +386,10 @@ for j in range(len(affinities)):
     else:
         break
 
-# polymerase
+# polymerase TODO paths
 
-pol_peaks_1 = pd.read_csv(f'drive/MyDrive/ML/poly/MACS2_ph0_R1_narrowPeaks.bed', sep='\t', header=None)
-pol_peaks_2 = pd.read_csv(f'drive/MyDrive/ML/poly/MACS2_ph0_R2_narrowPeaks.bed', sep='\t', header=None)
+pol_peaks_1 = pd.read_csv(f'{base_dir}/poly/MACS2_ph0_R1_narrowPeaks.bed', sep='\t', header=None)
+pol_peaks_2 = pd.read_csv(f'{base_dir}/poly/MACS2_ph0_R2_narrowPeaks.bed', sep='\t', header=None)
 pol_peaks_1.rename({0: "chr", 1: "start", 2: "end", 4: "score"}, axis="columns", inplace=True)
 pol_peaks_2.rename({0: "chr", 1: "start", 2: "end", 4: "score"}, axis="columns", inplace=True)
 pol_peaks_1 = pol_peaks_1[['chr', 'start', 'end', 'score']]
@@ -428,7 +431,7 @@ for j in range(len(affinities)):
     if i < len(peaks_1):
         if j == peaks_1["start"].values[i]:
             start = peaks_1["start"].values[i]
-            if (peaks_1["end"].values[i] >= len(affinities)):
+            if peaks_1["end"].values[i] >= len(affinities):
                 end = len(affinities)
             else:
                 end = peaks_1["end"].values[i]
@@ -485,6 +488,11 @@ window_end = 59000
 width = 24
 height = 4
 
+if not os.path.isdir(f'{base_dir}/gcPBM/figures'):
+    os.mkdir(f'{base_dir}/gcPBM/figures')
+if not os.path.isdir(f'{base_dir}/gcPBM/figures/{tipo}'):
+    os.mkdir(f'{base_dir}/gcPBM/figures/{tipo}')
+
 fig = plt.gcf()
 fig.set_size_inches(width, height)
 plt.plot(chip_step_pb[window_start:window_end], color='green')
@@ -498,7 +506,7 @@ plt.title(f'{chr_r} sequence')
 labels = ['PB-exo', 'ChIP-exo', 'Polymerase']
 plt.legend(labels, loc="best", prop={'size': 20})
 plt.show()
-fig.savefig(f'drive/MyDrive/ML/gcPBM/figures/{tipo}/pbchippoly.png')
+fig.savefig(f'{base_dir}/gcPBM/figures/{tipo}/pbchippoly.png')
 plt.clf()
 
 fig = plt.gcf()
@@ -509,7 +517,7 @@ plt.title(f'{chr_r} sequence')
 labels = ['ML Prediction']
 plt.legend(labels, loc="best", prop={'size': 20})
 plt.show()
-fig.savefig(f'drive/MyDrive/ML/gcPBM/figures/{tipo}/prediction.png')
+fig.savefig(f'{base_dir}/gcPBM/figures/{tipo}/prediction.png')
 plt.clf()
 
 fig = plt.gcf()
@@ -520,7 +528,7 @@ plt.title(f'{chr_r} sequence')
 labels = ["Nucleosomes"]
 plt.legend(labels, loc="best", prop={'size': 20})
 plt.show()
-fig.savefig(f'drive/MyDrive/ML/gcPBM/figures/{tipo}/nucleosomes.png')
+fig.savefig(f'{base_dir}/gcPBM/figures/{tipo}/nucleosomes.png')
 
 window_start = 36 * 1000
 window_end = 37 * 1000
@@ -537,7 +545,7 @@ labels = ['ML Prediction', 'Nucleosomes', 'PB-exo', 'ChIP-exo (1st Study)', 'ChI
           'ChIP-exo (2nd Study)- Rep2']
 plt.legend(labels, loc="best")
 
-counts = pd.read_csv(f'drive/MyDrive/ML/gcPBM/{protein}/genome_counts.txt', sep='\t')
+counts = pd.read_csv(f'{data_dir}/genome_counts.txt', sep='\t')
 counts.sum()
 
 # 121 / 69
@@ -556,7 +564,7 @@ for i in np.arange(len(tfbs) - 5):
 
 print([(tfbs[i:i + 6], i, scores[i]) for i in range(len(scores)) if scores[i] >= 4])
 
-top_feat = pd.read_csv(f'drive/MyDrive/ML/top_features.txt', sep='\t', header=None)
+top_feat = pd.read_csv(f'{base_dir}/top_features.txt', sep='\t', header=None)
 freqs = top_feat[0].value_counts()
 
 fig = plt.gcf()
@@ -565,9 +573,9 @@ plt.yticks(range(0, 230, 20))
 freqs.plot(kind='barh')
 print(freqs)
 
-top_feat = pd.read_csv(f'drive/MyDrive/ML/top_features.txt', sep='\t', header=None)
-top_feat_no_pres = pd.read_csv(f'drive/MyDrive/ML/top_features_no_pres.txt', sep='\t', header=None)
-top_feat_no_pres_rand = pd.read_csv(f'drive/MyDrive/ML/top_features_rand_no_pres.txt', sep='\t', header=None)
+top_feat = pd.read_csv(f'{base_dir}/top_features.txt', sep='\t', header=None)
+top_feat_no_pres = pd.read_csv(f'{base_dir}/top_features_no_pres.txt', sep='\t', header=None)
+top_feat_no_pres_rand = pd.read_csv(f'{base_dir}/top_features_rand_no_pres.txt', sep='\t', header=None)
 
 top_feat.rename({0: "Presence"}, axis="columns", inplace=True)
 freqs = top_feat['Presence'].value_counts()
@@ -586,13 +594,13 @@ ax.set_ylabel('Frequency')
 
 shape_feats = ['SHIFT', 'SLIDE', 'RISE', 'TILT', 'ROLL', 'TWIST']
 
-base_features = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/all_shape_feats.txt', sep='\t', header=None)
-no_SHIFT = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/SHIFT_feature.txt', sep='\t', header=None)
-no_SLIDE = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/SLIDE_feature.txt', sep='\t', header=None)
-no_RISE = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/RISE_feature.txt', sep='\t', header=None)
-no_TILT = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/TILT_feature.txt', sep='\t', header=None)
-no_ROLL = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/ROLL_feature.txt', sep='\t', header=None)
-no_TWIST = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/TWIST_feature.txt', sep='\t', header=None)
+base_features = pd.read_csv(f'{data_dir}/feature_study/all_shape_feats.txt', sep='\t', header=None)
+no_SHIFT = pd.read_csv(f'{data_dir}/feature_study/SHIFT_feature.txt', sep='\t', header=None)
+no_SLIDE = pd.read_csv(f'{data_dir}/feature_study/SLIDE_feature.txt', sep='\t', header=None)
+no_RISE = pd.read_csv(f'{data_dir}/feature_study/RISE_feature.txt', sep='\t', header=None)
+no_TILT = pd.read_csv(f'{data_dir}/feature_study/TILT_feature.txt', sep='\t', header=None)
+no_ROLL = pd.read_csv(f'{data_dir}/feature_study/ROLL_feature.txt', sep='\t', header=None)
+no_TWIST = pd.read_csv(f'{data_dir}/feature_study/TWIST_feature.txt', sep='\t', header=None)
 
 freqs_base = base_features[0].value_counts(normalize=True)
 freqs_SHIFT = no_SHIFT[0].value_counts(normalize=True)
@@ -623,7 +631,7 @@ ax = sns.heatmap(t, annot=True, cmap="RdBu", center=0)
 # correlations
 
 # feature-dependent correlations
-shape_df = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/correlations.txt', sep='\t', header=None)
+shape_df = pd.read_csv(f'{data_dir}/feature_study/correlations.txt', sep='\t', header=None)
 prots = [shape_df[0][j] for j in range(len(shape_df)) if shape_df[1][j] == 'SHIFT']
 SHIFT_df = [shape_df[2][j] for j in range(len(shape_df)) if shape_df[1][j] == 'SHIFT']
 SLIDE_df = [shape_df[2][j] for j in range(len(shape_df)) if shape_df[1][j] == 'SLIDE']
@@ -671,18 +679,18 @@ ax.set_ylabel('$R^2$', size=50)
 ax.yaxis.grid(True, color='lightgrey')
 ax.set_facecolor('white')
 
-pres_corr = pd.read_csv(f'drive/MyDrive/ML/electro_corr.txt', sep='\t')
+pres_corr = pd.read_csv(f'{base_dir}/electro_corr.txt', sep='\t')
 pres_corr = pres_corr.set_index('protein')
 pres_corr = pres_corr[['0vs5']]
 pres_corr.rename({"0vs5": "Presence"}, axis="columns", inplace=True)
 
-np_corr = pd.read_csv(f'drive/MyDrive/ML/no_pres_corr.txt', sep='\t', header=None)
+np_corr = pd.read_csv(f'{base_dir}/no_pres_corr.txt', sep='\t', header=None)
 np_corr.rename({0: "protein", 2: "0vs5"}, axis="columns", inplace=True)
 np_corr = np_corr.set_index('protein')
 np_corr = np_corr[['0vs5']]
 np_corr.rename({"0vs5": "No presence"}, axis="columns", inplace=True)
 
-npr_corr = pd.read_csv(f'drive/MyDrive/ML/rand_no_pres_corr.txt', sep='\t', header=None)
+npr_corr = pd.read_csv(f'{base_dir}/rand_no_pres_corr.txt', sep='\t', header=None)
 npr_corr.rename({0: "protein", 2: "0vs5"}, axis="columns", inplace=True)
 npr_corr = npr_corr.set_index('protein')
 npr_corr = npr_corr[['0vs5']]
@@ -718,19 +726,19 @@ ax.yaxis.grid(True, color='lightgrey')
 ax.set_ylabel('HT-SELEX $R^2$', size=40)
 ax.set_facecolor('white')
 
-pres_corr = pd.read_csv(f'drive/MyDrive/ML/electro_corr_linear.txt', sep=' ', header=None)
+pres_corr = pd.read_csv(f'{base_dir}/electro_corr_linear.txt', sep=' ', header=None)
 pres_corr.rename({0: "protein", 2: "0vs5"}, axis="columns", inplace=True)
 pres_corr = pres_corr.set_index('protein')
 pres_corr = pres_corr[['0vs5']]
 pres_corr.rename({"0vs5": "Presence"}, axis="columns", inplace=True)
 
-np_corr = pd.read_csv(f'drive/MyDrive/ML/no_pres_corr_linear.txt', sep='\t', header=None)
+np_corr = pd.read_csv(f'{base_dir}/no_pres_corr_linear.txt', sep='\t', header=None)
 np_corr.rename({0: "protein", 2: "0vs5"}, axis="columns", inplace=True)
 np_corr = np_corr.set_index('protein')
 np_corr = np_corr[['0vs5']]
 np_corr.rename({"0vs5": "No presence"}, axis="columns", inplace=True)
 
-npr_corr = pd.read_csv(f'drive/MyDrive/ML/rand_no_pres_corr_linear.txt', sep='\t', header=None)
+npr_corr = pd.read_csv(f'{base_dir}/rand_no_pres_corr_linear.txt', sep='\t', header=None)
 npr_corr.rename({0: "protein", 2: "0vs5"}, axis="columns", inplace=True)
 npr_corr = npr_corr.set_index('protein')
 npr_corr = npr_corr[['0vs5']]
@@ -754,11 +762,14 @@ ax.set_title('Correlations')
 ax.yaxis.grid(True, color='lightgrey')
 ax.set_facecolor('white')
 
-selex_1 = pd.read_csv(f'drive/MyDrive/ML/correlations/electro_corr_clear.txt', sep=' ')
-selex_2 = pd.read_csv(f'drive/MyDrive/ML/correlations/electro_corr_2.txt', sep='\t')
-upbm = pd.read_csv(f'drive/MyDrive/ML/correlations/corr_ws_2.txt', sep='\t')
-new_upbm = pd.read_csv(f'drive/MyDrive/ML/correlations/new_upbm_correlations.txt', sep='\t')
-ratios = pd.read_csv(f'drive/MyDrive/ML/correlations/ratios.txt', sep=' ', header=None)
+if not os.path.isdir(f'{base_dir}/correlations'):
+    os.mkdir(f'{base_dir}/correlations')
+
+selex_1 = pd.read_csv(f'{base_dir}/correlations/electro_corr_clear.txt', sep=' ')
+selex_2 = pd.read_csv(f'{base_dir}/correlations/electro_corr_2.txt', sep='\t')
+upbm = pd.read_csv(f'{base_dir}/correlations/corr_ws_2.txt', sep='\t')
+new_upbm = pd.read_csv(f'{base_dir}/correlations/new_upbm_correlations.txt', sep='\t')
+ratios = pd.read_csv(f'{base_dir}/correlations/ratios.txt', sep=' ', header=None)
 
 upbm = pd.concat([upbm, ratios], axis=1)
 l = []
@@ -810,16 +821,16 @@ ax = sns.heatmap(t[60:90], annot=True, cmap="RdBu", center=0)
 f, ax = plt.subplots(figsize=(5, 10))
 ax = sns.heatmap(t[90:], annot=True, cmap="RdBu", center=0)
 
-t.to_csv(r'drive/MyDrive/ML/correlations/all_datasets.txt', sep='\t', mode='w')
+t.to_csv(f'{base_dir}/correlations/all_datasets.txt', sep='\t', mode='w')
 
-(t['uPBM'].sort_values()[:34]).to_csv(r'drive/MyDrive/ML/correlations/upbm_filtered.txt', sep='\t', mode='w')
+(t['uPBM'].sort_values()[:34]).to_csv(f'{base_dir}/correlations/upbm_filtered.txt', sep='\t', mode='w')
 
 t.mean(), t.std()
 
-upbm = pd.read_csv(f'drive/MyDrive/ML/correlations/corr_ws_2.txt', sep='\t')
-new_upbm = pd.read_csv(f'drive/MyDrive/ML/correlations/new_upbm_correlations.txt', sep='\t')
-ratios = pd.read_csv(f'drive/MyDrive/ML/correlations/ratios.txt', sep=' ', header=None)
-features = pd.read_csv(f'drive/MyDrive/ML/correlations/upbm_features.txt', sep='\t')
+upbm = pd.read_csv(f'{base_dir}/correlations/corr_ws_2.txt', sep='\t')
+new_upbm = pd.read_csv(f'{base_dir}/correlations/new_upbm_correlations.txt', sep='\t')
+ratios = pd.read_csv(f'{base_dir}/correlations/ratios.txt', sep=' ', header=None)
+features = pd.read_csv(f'{base_dir}/correlations/upbm_features.txt', sep='\t')
 
 upbm = pd.concat([upbm[['PROTEINS', 'P+A+D']], ratios[0]], axis=1)
 upbm.index = upbm['PROTEINS']
@@ -839,11 +850,11 @@ DF.index = [i for i in range(len(DF))]
 df = DF.drop(l)[['PROTEINS', 'P+A+D', 'correlation', 0, 'presence', 'electro', 'shape']]
 f_upbm = list(df.mean()[['presence', 'electro', 'shape']])
 
-gcpbm_feat = pd.read_csv(f'drive/MyDrive/ML/gcPBM/feature_study/gcpbm_features.txt', sep='\t', header=None)
+gcpbm_feat = pd.read_csv(f'{base_dir}/gcPBM/feature_study/gcpbm_features.txt', sep='\t', header=None)
 gcpbm_feat.rename({1: "presence", 2: 'electro', 3: 'shape'}, axis="columns", inplace=True)
 f_gcpbm = list(gcpbm_feat.mean())
 
-selex_feat = pd.read_csv(f'drive/MyDrive/ML/correlations/htselex_features.txt', sep='\t', header=None)
+selex_feat = pd.read_csv(f'{base_dir}/correlations/htselex_features.txt', sep='\t', header=None)
 selex_feat.rename({1: "presence", 2: 'electro', 3: 'shape'}, axis="columns", inplace=True)
 f_selex = list(selex_feat.mean())
 
@@ -876,10 +887,10 @@ plt.show()
 
 # (146 - 20 - 17 - 15) / 1326
 
-selex_1 = pd.read_csv(f'drive/MyDrive/ML/correlations/electro_corr.txt', sep=' ')
-selex_2 = pd.read_csv(f'drive/MyDrive/ML/correlations/electro_corr_2.txt', sep='\t')
-upbm = pd.read_csv(f'drive/MyDrive/ML/correlations/corr_ws.txt', sep='\t')
-ratios = pd.read_csv(f'drive/MyDrive/ML/correlations/ratios.txt', sep=' ', header=None)
+selex_1 = pd.read_csv(f'{base_dir}/correlations/electro_corr.txt', sep=' ')
+selex_2 = pd.read_csv(f'{base_dir}/correlations/electro_corr_2.txt', sep='\t')
+upbm = pd.read_csv(f'{base_dir}/correlations/corr_ws.txt', sep='\t')
+ratios = pd.read_csv(f'{base_dir}/correlations/ratios.txt', sep=' ', header=None)
 
 upbm = pd.concat([upbm, ratios], axis=1)
 l = []
@@ -982,7 +993,7 @@ ax.yaxis.grid(True, color='lightgrey')
 ax.set_ylabel('$R^2$', size=50)
 ax.set_facecolor('white')
 
-t = pd.read_csv(f'drive/MyDrive/ML/correlations/upbm_dl.txt', sep='\t', header=None)
+t = pd.read_csv(f'{base_dir}/correlations/upbm_dl.txt', sep='\t', header=None)
 t.rename({0: "protein"}, axis="columns", inplace=True)
 t.index = t['protein']
 t = t[[1, 2, 3, 4, 5, 6, 7]]
@@ -1054,8 +1065,8 @@ ax.xaxis.grid(True, color='lightgrey')
 ax.set_facecolor('white')
 
 # new shape feats
-AVG = pd.read_csv(f'drive/MyDrive/ML/input/avg_tetramer_copy.dat', sep=' ')
-propeller = pd.read_excel(f'drive/MyDrive/ML/input/propeller_ok.xlsx')
+AVG = pd.read_csv(f'{base_dir}/input/avg_tetramer_copy.dat', sep=' ')
+propeller = pd.read_excel(f'{base_dir}/input/propeller_ok.xlsx')
 propeller.index = propeller['trimer']
 AVG.index = AVG['TETRA']
 propeller = propeller['Propeller_ok']
@@ -1074,13 +1085,13 @@ for tetra in list(AVG['TETRA']):
         AVG['TWIST_2'][tetra] = propeller[tri_2]
 
 (AVG[['SHIFT', 'SLIDE', 'RISE', 'TILT', 'ROLL', 'TWIST', 'TWIST_1', 'TWIST_2']]).to_csv(
-    r'drive/MyDrive/ML/input/new_avg.dat', sep=' ', mode='w')
+    f'{base_dir}/input/new_avg.dat', sep=' ', mode='w')
 
-only_shape_corr = pd.read_csv(f'drive/MyDrive/ML/correlations/only_shape_corr.txt', sep=' ')
+only_shape_corr = pd.read_csv(f'{base_dir}/correlations/only_shape_corr.txt', sep=' ')
 only_shape_corr.index = only_shape_corr['protein']
 only_shape_corr = only_shape_corr['correlation']
 
-new_shape_corr = pd.read_csv(f'drive/MyDrive/ML/correlations/new_avg_corr_2.txt', sep='\t')
+new_shape_corr = pd.read_csv(f'{base_dir}/correlations/new_avg_corr_2.txt', sep='\t')
 new_shape_corr.index = new_shape_corr['protein']
 new_shape_corr = new_shape_corr['correlation']
 
@@ -1109,13 +1120,13 @@ print('same corr on', sum([1 for k in range(19) if improv[k] == 0.0]))
 print('We do not improve corr on', sum([1 for k in range(19) if improv[k] < 0]))
 
 # pca
-AVG = pd.read_csv(f'drive/MyDrive/ML/input/avg_tetramer_copy.dat', sep=' ')
+AVG = pd.read_csv(f'{base_dir}/input/avg_tetramer_copy.dat', sep=' ')
 AVG = AVG.drop(np.arange(256, 290, 1))
 AVG.index = AVG['TETRA']
 AVG = AVG[['SHIFT', 'SLIDE', 'RISE', 'TILT', 'ROLL', 'TWIST']]
 
 tetra_fce = {line.split()[0]: np.array([float(x) for x in line.split()[1:]]) for line in
-             open(f'drive/MyDrive/ML/input/fce_tetramer.dat') if 'SHIFT' not in line}
+             open(f'{base_dir}/input/fce_tetramer.dat') if 'SHIFT' not in line}
 diag = pd.DataFrame({tt: tetra_fce[tt][list(range(0, 36, 7))] for tt in tetra_fce.keys()})
 diag = diag.transpose()
 
@@ -1168,10 +1179,10 @@ plt.show()
 np.sum(pcsum ** 2)
 
 # (20 + 17) / 146
-
+# TODO paths
 exclude = []
-conf_filter = pd.read_csv(f'drive/MyDrive/ML/conf_filter.txt', sep=',')
-rohs_protz = pd.read_csv(f'drive/MyDrive/ML/correlations/electro_corr.txt', sep=' ')
+conf_filter = pd.read_csv(f'{base_dir}/conf_filter.txt', sep=',')
+rohs_protz = pd.read_csv(f'{base_dir}/correlations/electro_corr.txt', sep=' ')
 for i in range(len(conf_filter)):
     if conf_filter['confidence'][i] == 0:
         exclude.append(conf_filter['protein'][i])

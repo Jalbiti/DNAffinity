@@ -16,7 +16,7 @@ Original file is located at
 
 ######### ALIGNMENT WORKFLOW #########
 
-import sys
+import sys, os
 import numpy as np
 import time
 import pandas as pd
@@ -54,10 +54,16 @@ for i in np.arange(0, len(prob)):
 
 # ordered
 
-with open(f'output_rohs/{protein}/{protein}_training_ordered.txt', 'w') as file:
+if not os.path.isdir('output_selex'):
+    os.mkdir('output_selex')
+if not os.path.isdir(f'output_selex/{protein}'):
+    os.mkdir(f'output_selex/{protein}')
+
+
+with open(f'output_selex/{protein}/{protein}_training_ordered.txt', 'w') as file:
     file.write('ID_REF\tVALUE\n')
 
-with open(f'output_rohs/{protein}/{protein}_training_ordered.txt', 'a') as file:
+with open(f'output_selex/{protein}/{protein}_training_ordered.txt', 'a') as file:
     for vector in mat:
         file.write("%s\t" % vector[0])
         file.write("%s\n" % vector[1])
@@ -66,10 +72,10 @@ with open(f'output_rohs/{protein}/{protein}_training_ordered.txt', 'a') as file:
 
 np.random.shuffle(mat)
 
-with open(f'output_rohs/{protein}/SELEX_training.txt', 'w') as file:
+with open(f'output_selex/{protein}/SELEX_training.txt', 'w') as file:
     file.write('ID_REF\tVALUE\n')
 
-with open(f'output_rohs/{protein}/SELEX_training.txt', 'a') as file:
+with open(f'output_selex/{protein}/SELEX_training.txt', 'a') as file:
     for vector in mat:
         file.write("%s\t" % vector[0])
         file.write("%s\n" % vector[1])
@@ -86,7 +92,7 @@ for tetramer in every_tetramer:
         aux = aux + electrostatic_dict[tetramer[i]]
     every_tetramer_dict[tetramer] = aux
 
-with open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/electrostatic.txt', 'w') as file:
+with open('electrostatic.txt', 'w') as file:
     for tetra in list(every_tetramer_dict):
         file.write("%s" % tetra)
         for i in range(5):
@@ -100,7 +106,7 @@ the_features = {0: ['diagonal_fce'], 1: ['presence_tetramer'], 2: ['avg'],
                 5: ['avg', 'diagonal_fce']}
 len_aln = len(strings[0])
 
-df_train = pd.read_csv(f'output_rohs/{protein}/SELEX_training.txt', sep='\t')
+df_train = pd.read_csv(f'output_selex/{protein}/SELEX_training.txt', sep='\t')
 
 
 chosen_features = the_features[4]
@@ -122,7 +128,7 @@ model.predict()
 print(model.y_test.shape, model.y_pred.shape)
 print('The correlation is ', model.r2)
 
-# plt.savefig(f'output_rohs/{protein}/corr_0vs{cycle}.png')
+# plt.savefig(f'output_selex/{protein}/corr_0vs{cycle}.png')
 
 # features
 
@@ -143,9 +149,9 @@ fig.set_size_inches(8, 8)
 labels = ["Presence", "Electrostatic", "Shape"]
 patches, texts = plt.pie(y, startangle=0)
 plt.legend(patches, labels, loc="best")
-plt.savefig(f'output_rohs/{protein}/features.png')
+plt.savefig(f'output_selex/{protein}/features.png')
 
-with open(f'output_rohs/htselex_rohs_correlations.txt', 'a') as file:
+with open(f'output_selex/htselex_rohs_correlations.txt', 'a') as file:
     file.write("%s\t" % protein)
     file.write("%s\n" % model.r2)
 

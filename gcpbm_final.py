@@ -66,17 +66,6 @@ for s in np.arange(len(strings)):
     if any(sc > 2.5 for sc in scores):
         discarded.append(s)
 
-# discarded = set(discarded)
-# for s in np.arange(len(strings)):
-#     string = strings[s]
-#     i = 12
-#     score = 0
-#     for j in np.arange(0,len(freq_matrix)):
-#           a = translate[string[i+j]]
-#           score = score + freq_matrix[j][a]
-#     if score < 1.1:
-#         discarded.add(s)
-
 discarded = list(discarded)
 print('We have discarded',len(discarded)/len(strings)*100,'% of the data')
 
