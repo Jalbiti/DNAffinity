@@ -35,7 +35,7 @@ if len(sys.argv) > 1:
     data_dir = f'proteins/{protein}'
 else:
     protein = 'Gata4'
-    data_dir = f'test_data'
+    data_dir = f'test_data/{protein}'
 
 #####################################
 # files required to run:

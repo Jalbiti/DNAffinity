@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -9,12 +10,24 @@ from Bio import pairwise2
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+
 protein = 'cbf1'
 concentration = '100'  # '100' or '200'
-experiment = 'pb'  # 'chip' or 'pb' for in vivo or in vitro resp.
-base_dir = f'drive/MyDrive/ML'
+experiment = 'chip'  # 'chip' or 'pb' for in vivo or in vitro resp.
+base_dir = f'test_data'
 # NOTE: base_dir has to contain directories base_dir/gcPBM/{protein}/... and base_dir/input
 data_dir = f'{base_dir}/gcPBM/{protein}'
+
+#####################################
+# files required to run:
+# '{data_dir}/{protein}_{experiment}-exo.gff'
+# '{data_dir}/{protein}_rep1_peaks.bed'
+# '{data_dir}/{protein}_dictionary_{chrsome}_{number}.txt'
+# '{base_dir}/poly/MACS2_ph0_R1_narrowPeaks.bed'
+# '{base_dir}/poly/MACS2_ph0_R2_narrowPeaks.bed'
+# ... more?
+#####################################
+
 
 # genomic
 
@@ -76,103 +89,30 @@ print(start_bp, end_bp, end_bp - start_bp)
 fasta = SeqIO.read(f"{base_dir}/gcPBM/{chrsome}_{number}.fa", "fasta")
 sequence = str(fasta.seq)
 
-experiment = 'chip'
-
-# genomic
-
-raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
-proc_peaks = raw_peaks[[0, 3, 4, 5, 8]]
-proc_peaks = proc_peaks.rename(columns={0: "chr", 3: "start", 4: "end", 5: "score", 8: "distance"})
-proc_peaks["distance"] = proc_peaks["distance"].str[12:].astype(int)
-proc_peaks["start"] = proc_peaks["start"] - proc_peaks["distance"]
-for i in range(len(proc_peaks)):
-    if proc_peaks["start"][i] < 0:
-        proc_peaks["start"][i] = 0
-proc_peaks["end"] = proc_peaks["end"] + proc_peaks["distance"]
-proc_peaks = proc_peaks[["chr", "start", "end", "score"]]
-min_val = min(proc_peaks["score"])
-normalization = max(proc_peaks["score"]) - min(proc_peaks["score"])
-proc_peaks["score"] = list(((proc_peaks["score"] - min_val) / normalization))
-
-with open(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
-    for i in range(len(proc_peaks)):
-        file.write("%s\t" % proc_peaks.iloc[i][0])
-        file.write("%s\t" % proc_peaks.iloc[i][1])
-        file.write("%s\t" % proc_peaks.iloc[i][2])
-        file.write("%s\n" % proc_peaks.iloc[i][3])
-
-chr4 = proc_peaks[proc_peaks['chr'] == chrsome]
-chr4 = chr4.sort_values("start")  # [1:12], [13:32]
-chr4 = chr4.reset_index(drop=True)
-print(chr4)
-
-experiment = 'pb'
-
-## genomic
-
-raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
-proc_peaks = raw_peaks[[0, 3, 4, 5, 8]]
-proc_peaks = proc_peaks.rename(columns={0: "chr", 3: "start", 4: "end", 5: "score", 8: "distance"})
-proc_peaks["distance"] = proc_peaks["distance"].str[12:].astype(int)
-proc_peaks["start"] = proc_peaks["start"] - proc_peaks["distance"]
-for i in range(len(proc_peaks)):
-    if proc_peaks["start"][i] < 0:
-        proc_peaks["start"][i] = 0
-proc_peaks["end"] = proc_peaks["end"] + proc_peaks["distance"]
-proc_peaks = proc_peaks[["chr", "start", "end", "score"]]
-min_val = min(proc_peaks["score"])
-normalization = max(proc_peaks["score"]) - min(proc_peaks["score"])
-proc_peaks["score"] = list(((proc_peaks["score"] - min_val) / normalization))
-
-with open(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', 'w') as file:
-    for i in range(len(proc_peaks)):
-        file.write("%s\t" % proc_peaks.iloc[i][0])
-        file.write("%s\t" % proc_peaks.iloc[i][1])
-        file.write("%s\t" % proc_peaks.iloc[i][2])
-        file.write("%s\n" % proc_peaks.iloc[i][3])
-
 chr4 = proc_peaks[proc_peaks['chr'] == chrsome]
 chr4 = chr4.sort_values("start")[34:49]  # [12:29], [30:42]
 chr4 = chr4.reset_index(drop=True)
 print(chr4)
 
-new_peaks = pd.read_csv(f'{data_dir}/{protein}_rep1_peaks.bed', sep='\t', header=None)
-new_peaks = new_peaks[[0, 1, 2, 4]]
-new_peaks = new_peaks.rename(columns={0: "chr", 1: "start", 2: "end", 4: "score"})
-min_val = min(new_peaks["score"])
-normalization = max(new_peaks["score"]) - min(new_peaks["score"])
-new_peaks["score"] = list(((new_peaks["score"] - min_val) / normalization))
+for rep in '12':
+    new_peaks = pd.read_csv(f'{data_dir}/{protein}_rep{rep}_peaks.bed', sep='\t', header=None)
+    new_peaks = new_peaks[[0, 1, 2, 4]]
+    new_peaks = new_peaks.rename(columns={0: "chr", 1: "start", 2: "end", 4: "score"})
+    min_val = min(new_peaks["score"])
+    normalization = max(new_peaks["score"]) - min(new_peaks["score"])
+    new_peaks["score"] = list(((new_peaks["score"] - min_val) / normalization))
 
-with open(f'{data_dir}/{protein}_rep1_peaks.bedgraph', 'w') as file:
-    for i in range(len(new_peaks)):
-        file.write("%s\t" % new_peaks.iloc[i][0])
-        file.write("%s\t" % new_peaks.iloc[i][1])
-        file.write("%s\t" % new_peaks.iloc[i][2])
-        file.write("%s\n" % new_peaks.iloc[i][3])
+    with open(f'{data_dir}/{protein}_rep{rep}_peaks.bedgraph', 'w') as file:
+        for i in range(len(new_peaks)):
+            file.write("%s\t" % new_peaks.iloc[i][0])
+            file.write("%s\t" % new_peaks.iloc[i][1])
+            file.write("%s\t" % new_peaks.iloc[i][2])
+            file.write("%s\n" % new_peaks.iloc[i][3])
 
-chr4 = new_peaks[new_peaks['chr'] == chr_r]
-chr4 = chr4.sort_values("start")  # [12:29], [30:42]
-chr4 = chr4.reset_index(drop=True)
-print(chr4)
-
-new_peaks = pd.read_csv(f'{data_dir}/{protein}_rep2_peaks.bed', sep='\t', header=None)
-new_peaks = new_peaks[[0, 1, 2, 4]]
-new_peaks = new_peaks.rename(columns={0: "chr", 1: "start", 2: "end", 4: "score"})
-min_val = min(new_peaks["score"])
-normalization = max(new_peaks["score"]) - min(new_peaks["score"])
-new_peaks["score"] = list(((new_peaks["score"] - min_val) / normalization))
-
-with open(f'{data_dir}/{protein}_rep2_peaks.bedgraph', 'w') as file:
-    for i in range(len(new_peaks)):
-        file.write("%s\t" % new_peaks.iloc[i][0])
-        file.write("%s\t" % new_peaks.iloc[i][1])
-        file.write("%s\t" % new_peaks.iloc[i][2])
-        file.write("%s\n" % new_peaks.iloc[i][3])
-
-chr4 = new_peaks[new_peaks['chr'] == chr_r]
-chr4 = chr4.sort_values("start")  # [12:29], [30:42]
-chr4 = chr4.reset_index(drop=True)
-print(chr4)
+    chr4 = new_peaks[new_peaks['chr'] == chr_r]
+    chr4 = chr4.sort_values("start")  # [12:29], [30:42]
+    chr4 = chr4.reset_index(drop=True)
+    print(chr4)
 
 data = pd.read_csv(f'{data_dir}/{protein}_dictionary_{chrsome}_{number}.txt', sep='\t',
                    header=None)
@@ -207,8 +147,6 @@ with open(f'{data_dir}/affinities_{protein}.bedgraph', 'w') as file:
         file.write("%s\t" % prof[2])
         file.write("%s\t" % prof[3])
         file.write("%s\n" % prof[1])
-
-experiment = 'chip'
 
 # Read in Chip-seq peaks from protein
 chip_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', sep='\t', header=None)
@@ -283,78 +221,44 @@ for j in range(len(affinities)):
         break
 
 # new peaks
-
-# Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'{data_dir}/{protein}_rep1_peaks.bedgraph', sep='\t', header=None)
-chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
-
-peaks_chr_this = chip_peaks[chip_peaks['chr'] == chr_r]
-filtered_peaks = peaks_chr_this[(peaks_chr_this["start"] > start_bp) & (peaks_chr_this["end"] <= end_bp)]
-peaks = filtered_peaks.copy()
-peaks = peaks.sort_values("start")
-peaks = peaks.reset_index(drop=True)
-
-# Set indices starting at our 0
-peaks['start'] = peaks['start'] - start_bp
-peaks['end'] = peaks['end'] - start_bp
-peaks['length'] = peaks['end'] - peaks['start']
-peaks = peaks[['start', 'end', 'length', 'score']]
-
-# create step plot from chip seq data
 chip_step_new = [0] * len(affinities)
-i = 0
-for j in range(len(affinities)):
-    if i < len(peaks):
-        if j == peaks["start"].values[i]:
-            start = peaks["start"].values[i]
-            if peaks["end"].values[i] >= len(affinities):
-                end = len(affinities)
-            else:
-                end = peaks["end"].values[i]
-
-            # chip_step[start:end] = [np.max(affinities)] * (end - start) # will input max for length of peak
-            chip_step_new[start:end] = [peaks["score"].values[i]] * (end - start)  # will input 1 for length of peak
-            i += 1
-    else:
-        break
-
-# new peaks second replicate
-
-# Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'{data_dir}/{protein}_rep2_peaks.bedgraph', sep='\t', header=None)
-chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
-
-peaks_chr_this = chip_peaks[chip_peaks['chr'] == chr_r]
-filtered_peaks = peaks_chr_this[(peaks_chr_this["start"] > start_bp) & (peaks_chr_this["end"] <= end_bp)]
-peaks = filtered_peaks.copy()
-peaks = peaks.sort_values("start")
-peaks = peaks.reset_index(drop=True)
-
-# Set indices starting at our 0
-peaks['start'] = peaks['start'] - start_bp
-peaks['end'] = peaks['end'] - start_bp
-peaks['length'] = peaks['end'] - peaks['start']
-peaks = peaks[['start', 'end', 'length', 'score']]
-
-# create step plot from chip seq data
 chip_step_new_2 = [0] * len(affinities)
-i = 0
-for j in range(len(affinities)):
-    if i < len(peaks):
-        if j == peaks["start"].values[i]:
-            start = peaks["start"].values[i]
-            if peaks["end"].values[i] >= len(affinities):
-                end = len(affinities)
-            else:
-                end = peaks["end"].values[i]
 
-            # chip_step[start:end] = [np.max(affinities)] * (end - start) # will input max for length of peak
-            chip_step_new_2[start:end] = [peaks["score"].values[i]] * (end - start)  # will input 1 for length of peak
-            i += 1
-    else:
-        break
+for rep, chip in zip('12', [chip_step_new, chip_step_new_2]):
+    # Read in Chip-seq peaks from protein
+    chip_peaks = pd.read_csv(f'{data_dir}/{protein}_rep{rep}_peaks.bedgraph', sep='\t', header=None)
+    chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
 
-print(peaks)
+    peaks_chr_this = chip_peaks[chip_peaks['chr'] == chr_r]
+    filtered_peaks = peaks_chr_this[(peaks_chr_this["start"] > start_bp) & (peaks_chr_this["end"] <= end_bp)]
+    peaks = filtered_peaks.copy()
+    peaks = peaks.sort_values("start")
+    peaks = peaks.reset_index(drop=True)
+
+    # Set indices starting at our 0
+    peaks['start'] = peaks['start'] - start_bp
+    peaks['end'] = peaks['end'] - start_bp
+    peaks['length'] = peaks['end'] - peaks['start']
+    peaks = peaks[['start', 'end', 'length', 'score']]
+
+    # create step plot from chip seq data
+    i = 0
+    for j in range(len(affinities)):
+        if i < len(peaks):
+            if j == peaks["start"].values[i]:
+                start = peaks["start"].values[i]
+                if peaks["end"].values[i] >= len(affinities):
+                    end = len(affinities)
+                else:
+                    end = peaks["end"].values[i]
+
+                # chip_step[start:end] = [np.max(affinities)] * (end - start) # will input max for length of peak
+                chip[start:end] = [peaks["score"].values[i]] * (end - start)  # will input 1 for length of peak
+                i += 1
+        else:
+            break
+
+    print(peaks)
 
 nuc_peaks = pd.read_csv(f'{data_dir}/avg_nuc_calls.txt', sep=',')
 nuc_peaks = nuc_peaks[['chr', 'start', 'end', 'score']]

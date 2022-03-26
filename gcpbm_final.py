@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 ### conda code v1
 
-!pip install biopython
-!pip install folium
-!curl -O https://raw.githubusercontent.com/jperkel/example_notebook/master/NC_005816.gb
+# !pip install biopython
+# !pip install folium
+# !curl -O https://raw.githubusercontent.com/jperkel/example_notebook/master/NC_005816.gb
 
 ##################
 
@@ -16,8 +16,8 @@ from dataset import Dataset
 from model import Model
 
 protein = 'cbf1'
-concentration = '100' # '100' or '200'
-data_dir = f'drive/MyDrive/ML/gcPBM/{protein}'
+concentration = '100'  # '100' or '200'
+data_dir = f'test_data/gcPBM/{protein}'
 
 #####################################
 # files required to run:
@@ -36,28 +36,26 @@ strings = [seq[3:33] for seq in strings]
 values = proc_data["Alexa488"]
 
 min_val = min(values)
-normalization= max(values)-min(values)
-values = list((values-min_val)/normalization)
+normalization = max(values) - min(values)
+values = list((values - min_val) / normalization)
 
 dictionary = dict(zip(values, strings))
 
 plt.plot(sorted(values))
 print(strings[0][12:18])
 
-
-
 freq_matrix = pd.read_csv(f'{data_dir}/cbf1_freq_matrix_6.txt', delim_whitespace=True)
 freq_matrix = np.array(freq_matrix)
-translate = {'A':0, 'C':1, 'G':2, 'T':3}
-reverse = {0:'A', 1:'C', 2:'G', 3:'T'}
+translate = {'A': 0, 'C': 1, 'G': 2, 'T': 3}
+reverse = {0: 'A', 1: 'C', 2: 'G', 3: 'T'}
 
 len_aln = len(strings[0])
 
 # scores
 
-l =  list(np.arange(0,12-5))
-for k in np.arange(18,30-5):
-  l.append(k)
+l = list(np.arange(0, 12 - 5))
+for k in np.arange(18, 30 - 5):
+    l.append(k)
 
 discarded = []
 for s in np.arange(len(strings)):
@@ -65,18 +63,17 @@ for s in np.arange(len(strings)):
     scores = []
     for i in l:
         score = 0
-        for j in np.arange(0,len(freq_matrix)):
-            a = translate[string[i+j]]
+        for j in np.arange(0, len(freq_matrix)):
+            a = translate[string[i + j]]
             score = score + freq_matrix[j][a]
         scores.append(score)
     if any(sc > 2.5 for sc in scores):
         discarded.append(s)
 
 discarded = list(discarded)
-print('We have discarded',len(discarded)/len(strings)*100,'% of the data')
+print('We have discarded', len(discarded) / len(strings) * 100, '% of the data')
 
-
-## options:
+# options:
 
 # no smart under, no weighting
 df_train = pd.DataFrame({'ID_REF': strings, 'VALUE': values})
@@ -92,9 +89,8 @@ len(df_train)
 # df_train = df_train.sample(frac=1).reset_index(drop=True)[0:15000]
 
 
-
 the_features = {0: ['electrostatic'], 1: ['presence_tetramer'], 2: ['avg'], 3: ['diagonal_fce'],
-                4: ['presence_tetramer', 'avg', 'diagonal_fce','electrostatic'], 5: ['avg', 'diagonal_fce']}
+                4: ['presence_tetramer', 'avg', 'diagonal_fce', 'electrostatic'], 5: ['avg', 'diagonal_fce']}
 len_aln = len(strings[0])
 
 chosen_features = the_features[4]
@@ -103,7 +99,7 @@ regressor = 'random_forest'
 training_set_size = 0.9
 randomize_fce = False
 score = 'Median_intensity'
-selected_tetramers = list(np.arange(0,len_aln-3))
+selected_tetramers = list(np.arange(0, len_aln - 3))
 
 ## time
 
@@ -119,7 +115,7 @@ model.predict()
 print(model.y_test.shape, model.y_pred.shape)
 print('The correlation is ', model.r2)
 model.plot()
-plt.plot([0,1],color='red')
+plt.plot([0, 1], color='red')
 
 # with open(f'output/{protein}/electro_correlations.txt','a') as file:
 #    file.write("0vs%s\t" % cycle)
@@ -133,9 +129,9 @@ p = sum([df[1][k] for k in index])
 index = [k for k in range(model.X.shape[1]) if df[0][k] == 'Electro']
 e = sum([df[1][k] for k in index])
 
-shape = 1-e-p
+shape = 1 - e - p
 
-y = np.array([p,e,shape])
+y = np.array([p, e, shape])
 
 fig = plt.gcf()
 fig.set_size_inches(8, 8)
@@ -148,6 +144,6 @@ plt.show()
 plt.xlabel('Feature number')
 plt.ylabel('Relative importance (%)')
 plt.legend('Top 30 features')
-plt.bar(range(len(l[0:10])),l[0:10],color='red',align="center",)
+plt.bar(range(len(l[0:10])), l[0:10], color='red', align="center", )
 
 print(df[0:10])
