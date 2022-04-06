@@ -31,11 +31,11 @@ from model import Model
 if len(sys.argv) > 1:
     protein = sys.argv[1]
     cycle = sys.argv[2]
+    data_dir = f'proteins/{protein}'
 else:
-    protein = 'Gata4'
+    protein = 'AR1'
     cycle = '4'
-
-data_dir = f'reduced_selex_results_rohs/{protein}'
+    data_dir = f'test_data/{protein}'
 
 #####################################
 # files required to run:

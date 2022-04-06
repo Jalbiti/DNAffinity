@@ -23,15 +23,16 @@ data_dir = f'{base_dir}/gcPBM/{protein}'
 # '{data_dir}/{protein}_{experiment}-exo.gff'
 # '{data_dir}/{protein}_rep1_peaks.bed'
 # '{data_dir}/{protein}_dictionary_{chrsome}_{number}.txt'
-# '{base_dir}/poly/MACS2_ph0_R1_narrowPeaks.bed'
-# '{base_dir}/poly/MACS2_ph0_R2_narrowPeaks.bed'
+# '{base_dir}/gcPBM/MACS2_ph0_R1_narrowPeaks.bed'
+# '{base_dir}/gcPBM/MACS2_ph0_R2_narrowPeaks.bed'
+# '{base_dir}/gcPBM/{chrsome}_{number}.fa'
 # ... more?
 #####################################
 
 
 # genomic
 
-raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.gff', sep='\t', header=None)
+raw_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}.exo.gff', sep='\t', header=None)
 proc_peaks = raw_peaks[[0, 3, 4, 5, 8]]
 proc_peaks = proc_peaks.rename(columns={0: "chr", 3: "start", 4: "end", 5: "score", 8: "distance"})
 proc_peaks["distance"] = proc_peaks["distance"].str[12:].astype(int)
@@ -62,8 +63,8 @@ for k in range(1, 17):
 
 # intervals: 25-26 (1), 27-28 (2), 29-30 (3), 32-33 (4), 34-35 (5)
 
-chrsome = 'chr14'
-chr_r = 'chrXIV'
+chrsome = 'chr4'
+chr_r = 'chrIV'
 number = 2
 start_bp = 100000 * (number - 1) + 1
 end_bp = 100000 * number
@@ -165,7 +166,7 @@ peaks['length'] = peaks['end'] - peaks['start']
 peaks = peaks[['start', 'end', 'length', 'score']]
 
 # create step plot from chip seq data
-chip_step_chip = [0] * len(affinities)
+chip_step = [0] * len(affinities)
 i = 0
 for j in range(len(affinities)):
     if i < len(peaks):
@@ -177,48 +178,12 @@ for j in range(len(affinities)):
                 end = peaks["end"].values[i]
 
             # chip_step[start:end] = [np.max(affinities)] * (end - start) # will input max for length of peak
-            chip_step_chip[start:end] = [peaks["score"].values[i]] * (end - start)  # will input 1 for length of peak
+            chip_step[start:end] = [peaks["score"].values[i]] * (end - start)  # will input 1 for length of peak
             i += 1
     else:
         break
 
 print(peaks)
-
-experiment = 'pb'
-
-# Read in Chip-seq peaks from protein
-chip_peaks = pd.read_csv(f'{data_dir}/{protein}_{experiment}-exo.bedgraph', sep='\t', header=None)
-chip_peaks.rename({0: "chr", 1: "start", 2: "end", 3: "score"}, axis="columns", inplace=True)
-
-peaks_chr_this = chip_peaks[chip_peaks['chr'] == chrsome]
-filtered_peaks = peaks_chr_this[(peaks_chr_this["start"] > start_bp) & (peaks_chr_this["end"] <= end_bp)]
-peaks = filtered_peaks.copy()
-peaks = peaks.sort_values("start")
-peaks = peaks.reset_index(drop=True)
-
-# Set indices starting at our 0
-peaks['start'] = peaks['start'] - start_bp
-peaks['end'] = peaks['end'] - start_bp
-peaks['length'] = peaks['end'] - peaks['start']
-peaks = peaks[['start', 'end', 'length', 'score']]
-
-# create step plot from chip seq data
-chip_step_pb = [0] * len(affinities)
-i = 0
-for j in range(len(affinities)):
-    if i < len(peaks):
-        if j == peaks["start"].values[i]:
-            start = peaks["start"].values[i]
-            if peaks["end"].values[i] >= len(affinities):
-                end = len(affinities)
-            else:
-                end = peaks["end"].values[i]
-
-            # chip_step[start:end] = [np.max(affinities)] * (end - start) # will input max for length of peak
-            chip_step_pb[start:end] = [peaks["score"].values[i]] * (end - start)  # will input 1 for length of peak
-            i += 1
-    else:
-        break
 
 # new peaks
 chip_step_new = [0] * len(affinities)
@@ -292,8 +257,8 @@ for j in range(len(affinities)):
 
 # polymerase TODO paths
 
-pol_peaks_1 = pd.read_csv(f'{base_dir}/poly/MACS2_ph0_R1_narrowPeaks.bed', sep='\t', header=None)
-pol_peaks_2 = pd.read_csv(f'{base_dir}/poly/MACS2_ph0_R2_narrowPeaks.bed', sep='\t', header=None)
+pol_peaks_1 = pd.read_csv(f'{base_dir}/gcPBM/MACS2_ph0_R1_narrowPeaks.bed', sep='\t', header=None)
+pol_peaks_2 = pd.read_csv(f'{base_dir}/gcPBM/MACS2_ph0_R2_narrowPeaks.bed', sep='\t', header=None)
 pol_peaks_1.rename({0: "chr", 1: "start", 2: "end", 4: "score"}, axis="columns", inplace=True)
 pol_peaks_2.rename({0: "chr", 1: "start", 2: "end", 4: "score"}, axis="columns", inplace=True)
 pol_peaks_1 = pol_peaks_1[['chr', 'start', 'end', 'score']]
@@ -371,8 +336,7 @@ fig = plt.gcf()
 fig.set_size_inches(24, 10)
 plt.plot(nuc_step[window_start:window_end], color='red')
 plt.plot(affinities[window_start:window_end], color='blue')
-plt.plot(chip_step_pb[window_start:window_end], color='green')
-plt.plot(chip_step_chip[window_start:window_end], color='orange')
+plt.plot(chip_step[window_start:window_end], color='orange')
 plt.plot(chip_step_new[window_start:window_end], color='purple')
 plt.plot(chip_step_new_2[window_start:window_end], color='hotpink')
 
@@ -399,8 +363,7 @@ if not os.path.isdir(f'{base_dir}/gcPBM/figures/{tipo}'):
 
 fig = plt.gcf()
 fig.set_size_inches(width, height)
-plt.plot(chip_step_pb[window_start:window_end], color='green')
-plt.plot(chip_step_chip[window_start:window_end], color='black')
+plt.plot(chip_step[window_start:window_end], color='black')
 plt.plot(peak_step_1[window_start:window_end], color='darkorange')
 plt.plot(chip_step_new[window_start:window_end], color='black')
 plt.plot(chip_step_new_2[window_start:window_end], color='black')
@@ -441,8 +404,7 @@ fig = plt.gcf()
 fig.set_size_inches(16, 8)
 plt.plot(affinities[window_start:window_end])
 plt.plot(nuc_step[window_start:window_end], color='red')
-plt.plot(chip_step_pb[window_start:window_end], color='green')
-plt.plot(chip_step_chip[window_start:window_end], color='orange')
+plt.plot(chip_step[window_start:window_end], color='orange')
 plt.plot(chip_step_new[window_start:window_end], color='purple')
 plt.plot(chip_step_new_2[window_start:window_end], color='hotpink')
 labels = ['ML Prediction', 'Nucleosomes', 'PB-exo', 'ChIP-exo (1st Study)', 'ChIP-exo (2nd Study)- Rep1',

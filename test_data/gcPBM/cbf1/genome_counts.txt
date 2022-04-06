@@ -1,0 +1,12 @@
+chromosome	TP	FN	NM	FP
+chr1	7	0	26	2
+chr2	8	1	41	10
+chr3	4	1	21	6
+chr4	18	2	118	21
+chr5	17	1	41	8
+chr6	8	1	20	2
+chr7	17	2	110	20
+chr8	11	1	38	6
+chr9	12	2	34	5
+chr10	19	0	107	13
+

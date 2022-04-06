@@ -42,13 +42,13 @@ class Model:
         # splits w/o randomness for training and testing
         if self.weights is not None:
             self.X_train, self.X_test, self.y_train, self.y_test, \
-                self.w_train, self.w_test = train_test_split(self.X, self.y, self.weights,
+                self.w_train, self.w_test = train_test_split(self.X, self.y.ravel(), self.weights,
                                                              train_size=self.training_set_size,
                                                              random_state=0, shuffle=False)
             self.regressor.fit(self.X_train, self.y_train, self.w_train)
         else:
             self.X_train, self.X_test, self.y_train, \
-                self.y_test = train_test_split(self.X, self.y, train_size=self.training_set_size,
+                self.y_test = train_test_split(self.X, self.y.ravel(), train_size=self.training_set_size,
                                                random_state=0, shuffle=False)
             self.regressor.fit(self.X_train, self.y_train)
 
@@ -85,7 +85,7 @@ class Model:
         self.y_pred = self.regressor.predict(self.X_test).reshape(-1, 1)
         self.y_test = self.y_test.reshape(-1, 1)
         if self.weights is not None:
-            self.r2 = np.round(metrics.r2_score(self.y_test, self.y_pred, self.w_test), 3)  # with weights
+            self.r2 = np.round(metrics.r2_score(self.y_test, self.y_pred, sample_weight=self.w_test), 3)  # with weights
         else:
             self.r2 = np.round(metrics.r2_score(self.y_test, self.y_pred), 3)           # w/o weights
         self.mse = np.round(metrics.mean_absolute_error(self.y_test, self.y_pred), 6)
