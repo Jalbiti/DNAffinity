@@ -50,11 +50,11 @@ class Dataset:
         :return: None
         """
         tetra_fce = {line.split()[0]: np.array([float(x) for x in line.split()[1:]])
-                     for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/fce_tetramer.dat')
+                     for line in open('fce_tetramer.dat')
                      if 'SHIFT' not in line}
         if 'avg' in self.feats:
             tetra_avg = {line.split()[0]: np.array([float(x) for x in line.split()[1:]])
-                         for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/avg_tetramer.dat')
+                         for line in open('avg_tetramer.dat')
                          if 'SHIFT' not in line}
             self.tetra_avg = np.array([np.concatenate([tetra_avg[otmer[i:i+4]] for i in self.selected_tetramers])
                                        for otmer in self.sequences])
@@ -87,14 +87,14 @@ class Dataset:
         #####
         if 'mgw' in self.feats:
             self.mgw = {line.split()[0]: [float(x) for x in line.split()[1:]]
-                        for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/mgw_rohs.txt')
+                        for line in open('mgw_rohs.txt')
                         if 'SHIFT' not in line}
             self.mgw = np.array([np.concatenate([self.mgw[otmer[i:i+4]] for i in self.selected_tetramers])
                                  for otmer in self.sequences])
 
         if 'electrostatic' in self.feats:
             self.electrostatic = {line.split()[0]: [x for x in line.split()[1:]]
-                                  for line in open(f'/orozco/projects/proteinBinding/PBM_SELEX/input/electrostatic.txt')
+                                  for line in open('electrostatic.txt')
                                   if 'SHIFT' not in line}
             self.electrostatic = np.array([np.concatenate([self.electrostatic[otmer[i:i+4]]
                                                            for i in self.selected_tetramers])

@@ -48,7 +48,7 @@ class Model:
             self.regressor.fit(self.X_train, self.y_train, self.w_train)
         else:
             self.X_train, self.X_test, self.y_train, \
-                self.y_test = train_test_split(self.X, self.y, self.weights, train_size=self.training_set_size,
+                self.y_test = train_test_split(self.X, self.y, train_size=self.training_set_size,
                                                random_state=0, shuffle=False)
             self.regressor.fit(self.X_train, self.y_train)
 

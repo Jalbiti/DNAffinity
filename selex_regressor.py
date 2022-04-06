@@ -28,8 +28,12 @@ from itertools import product
 from dataset import Dataset
 from model import Model
 
-protein = sys.argv[1]
-cycle = sys.argv[2]
+if len(sys.argv) > 1:
+    protein = sys.argv[1]
+    cycle = sys.argv[2]
+else:
+    protein = 'Gata4'
+    cycle = '4'
 
 data_dir = f'reduced_selex_results_rohs/{protein}'
 
