@@ -9,31 +9,39 @@
 
 import time
 import numpy as np
+import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from dataset import Dataset
 from model import Model
 
-protein = 'cbf1'
-concentration = '100'  # '100' or '200'
-data_dir = f'test_data/gcPBM/{protein}'
+
+if len(sys.argv) > 1:
+    protein = sys.argv[1]
+    concentration = sys.argv[2]
+    data_dir = f'proteins/{protein}'
+else:
+    protein = 'cbf1'
+    concentration = '100'
+    data_dir = f'test_data/gcPBM/{protein}'
+
 
 #####################################
 # files required to run:
 # '{data_dir}/{protein}_{concentration}.txt'
-# '{data_dir}/cbf1_freq_matrix_6.txt'
+# '{data_dir}/{protein}_freq_matrix_6.txt'_freq_matrix_6.txt
 #####################################
 
 # yeast
 
 raw_data = pd.read_csv(f'{data_dir}/{protein}_{concentration}.txt', sep='\t')
-proc_data = pd.concat([raw_data[["Sequence", "Alexa488"]]])
+proc_data = pd.concat([raw_data[["Sequence", "Intensity"]]])
 proc_data = proc_data.dropna()
 proc_data = proc_data.reset_index()
 strings = list(proc_data["Sequence"])
 strings = [seq[3:33] for seq in strings]
-values = proc_data["Alexa488"]
+values = proc_data["Intensity"]
 
 min_val = min(values)
 normalization = max(values) - min(values)

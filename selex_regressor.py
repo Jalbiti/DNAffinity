@@ -13,7 +13,6 @@ Original file is located at
 # !pip install folium
 # !curl -O https://raw.githubusercontent.com/jperkel/example_notebook/master/NC_005816.gb
 
-
 ######### ALIGNMENT WORKFLOW #########
 
 import sys, os
