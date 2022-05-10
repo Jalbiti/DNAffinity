@@ -20,13 +20,13 @@ The pipeline for a specific protein consists of:
 ---------------
 
 This is an example of the main steps followed to predict affinities for a specific 
-Transcription Factor. For testing purposes, just launch `[method]_regressor.py` to
+transcription factor. For testing purposes, just launch `{method}_regressor.py` to
 run the calculations on the test case.
 
 1. Make sure you have all the required files (compare formatting with the templates): 
    + `proteins/{protein}/{protein}_matrix_aligned.txt` for `upbm_regressor.py`
    + `proteins/{protein}/{cycle}.txt` for `selex_regressor.py`
    + `proteins/{protein}/{protein}_{concentration}.txt` and `proteins/{protein}/_freq_matrix_6.txt` for `gcpbm_regressor.py`
-2. Launch `[method]_regressor.py` always passing the protein name as the 1st argument, and:
+2. Launch `{method}_regressor.py` always passing the protein name as the 1st argument, and:
    + the cycle number as the 2nd argument for `selex_regressor.py`
    + the concentration as the 2nd argument for `gcpbm_regressor.py`

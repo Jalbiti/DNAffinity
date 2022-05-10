@@ -23,6 +23,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import time
+import pickle
 
 from collections import defaultdict
 import random
@@ -179,3 +180,4 @@ with open(f'output_upbm/upbm_features.txt', 'a') as file:
     file.write("%s\n" % shape)
 
 print(df[0:30])
+pickle.dump(model, open(f'output_upbm/{protein}/model.pck', 'wb'))

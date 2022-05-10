@@ -6,12 +6,13 @@
 # !curl -O https://raw.githubusercontent.com/jperkel/example_notebook/master/NC_005816.gb
 
 ##################
-
+import os
 import time
 import numpy as np
 import sys
 import pandas as pd
 import matplotlib.pyplot as plt
+import pickle
 
 from dataset import Dataset
 from model import Model
@@ -155,3 +156,8 @@ plt.legend('Top 30 features')
 plt.bar(range(len(l[0:10])), l[0:10], color='red', align="center", )
 
 print(df[0:10])
+if not os.path.isdir('output_gcpbm'):
+    os.mkdir('output_gcpbm')
+if not os.path.isdir(f'output_gcpbm/{protein}'):
+    os.mkdir(f'output_gcpbm/{protein}')
+pickle.dump(model, open(f'output_gcpbm/{protein}/model.pck', 'wb'))

@@ -20,6 +20,7 @@ import numpy as np
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
+import pickle
 
 from collections import defaultdict
 from itertools import product
@@ -168,3 +169,4 @@ with open(f'output_selex/htselex_features.txt', 'a') as file:
     file.write("%s\n" % shape)
 
 print(df[0:30])
+pickle.dump(model, open(f'output_selex/{protein}/model.pck', 'wb'))
