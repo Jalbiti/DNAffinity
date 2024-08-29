@@ -30,3 +30,4 @@ run the calculations on the test case.
 2. Launch `{method}_regressor.py` always passing the protein name as the 1st argument, and:
    + the cycle number as the 2nd argument for `selex_regressor.py`
    + the concentration as the 2nd argument for `gcpbm_regressor.py`
+
