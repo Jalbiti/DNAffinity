@@ -20,7 +20,7 @@ if len(sys.argv) > 1:
     cycle = sys.argv[2]
     data_dir = f'proteins/{protein}'
 else:
-    protein = 'AR1'
+    protein = 'Gata4'
     cycle = '4'
     data_dir = f'test_data/{protein}'
 
