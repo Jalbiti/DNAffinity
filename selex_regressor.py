@@ -37,11 +37,8 @@ values = list(deca["Affinity"])
 counts = list(deca["ObservedCount"])
 prob = list(deca["Probability"])
 
-# rohs' undersampling
+# undersampling
 
-# count_bound = sorted(counts)[int(len(counts)*0.9)]
-# count_bound = 100
-# prob_bound = 10e-7
 prob_bound = sorted(prob)[int(len(prob)*0.9)]
 
 mat = []
