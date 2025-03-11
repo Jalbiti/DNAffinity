@@ -13,7 +13,7 @@ trained method provides also good estimates of *in vivo* binding sites in yeast.
 The pipeline for a specific protein consists of:
 
 1. Getting the data file (e.g. the `Gata4_alignment_weighted.txt` file from the **test_data** folder) 
-2. Running the corresponding regressor (e.g. `python upbm_regressor.py` for uPBM data)
+2. Running the corresponding regressor (e.g. `python upbm_regressor.py Gata4` for uPBM data)
 
 ## Usage
 
