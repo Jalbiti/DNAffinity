@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SELEXSequencingConfig  xmlns:xsi="http://www.columbia.edu/"  xsi:noNamespaceSchemaLocation="selex.xsd">
+        <SequencingRunInfo name="R0.lib">        <!-- information needed for differentiating multiple sequencing info instances -->
+
+                <DataFile>protein_cycle0.fastq</DataFile> <!-- abosulte/relative/windows paths -->
+                <SequencingPlatform>Illumina</SequencingPlatform>
+                <ResearcherName>Sandro Barissi</ResearcherName>
+                <ResearcherEmail>sandro.barissi@irbbarcelona.org</ResearcherEmail>
+                <SequencingFacilityName>IRB Barcelona</SequencingFacilityName>
+                <SequencingFacilityEmail></SequencingFacilityEmail>
+                <Description></Description> <!--  -->
+                <Notes>Test on Rohs SELEX data</Notes>
+
+                <Sample name="R0.sample" round="0">
+                        <Protein>protein</Protein>
+                        <Concentration></Concentration>         <!-- #optional -->
+                        <VariableRegionLength>20</VariableRegionLength>
+                        <LeftFlank></LeftFlank>
+                        <RightFlank></RightFlank>
+                        <LeftBarcode></LeftBarcode>
+                        <RightBarcode></RightBarcode>
+                        <Round0></Round0>
+                        <Notes>initial random DNA pool with "GC" barcode in right flank</Notes>
+                </Sample>
+
+        </SequencingRunInfo>
+
+
